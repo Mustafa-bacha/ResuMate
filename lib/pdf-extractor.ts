@@ -10,9 +10,13 @@ import path from 'path';
 export async function extractTextFromPDF(buffer: ArrayBuffer): Promise<string> {
   try {
     const b64 = Buffer.from(buffer).toString('base64');
-    const scriptPath = path.join(process.cwd(), 'scripts', 'extract-pdf.js');
+    const scriptName = 'extract-pdf.js';
+    const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
 
-    const result = spawnSync('node', [scriptPath], {
+    // Obfuscate the arguments to prevent Turbopack from analyzing the path
+    const cmd = 'node';
+    const args = [scriptPath];
+    const result = spawnSync(cmd, args, {
       input: b64,
       maxBuffer: 20 * 1024 * 1024, // 20MB
       encoding: 'utf8',
