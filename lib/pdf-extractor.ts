@@ -10,8 +10,9 @@ import path from 'path';
 export async function extractTextFromPDF(buffer: ArrayBuffer): Promise<string> {
   try {
     const b64 = Buffer.from(buffer).toString('base64');
-    const scriptName = 'extract-pdf.js';
-    const scriptPath = path.join(process.cwd(), 'scripts', scriptName);
+    const p1 = 'scripts';
+    const p2 = 'extract-pdf.js';
+    const scriptPath = [process.cwd(), p1, p2].join('/');
 
     // Obfuscate the arguments to prevent Turbopack from analyzing the path
     const cmd = 'node';
