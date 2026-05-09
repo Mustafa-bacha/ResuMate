@@ -4,20 +4,19 @@
  * which would otherwise break the CJS require() of pdf-parse.
  */
 
-import { spawnSync } from 'child_process';
 import path from 'path';
 
 export async function extractTextFromPDF(buffer: ArrayBuffer): Promise<string> {
   try {
     const b64 = Buffer.from(buffer).toString('base64');
-    const p1 = 'scripts';
-    const p2 = 'extract-pdf.js';
-    const scriptPath = [process.cwd(), p1, p2].join('/');
+    const scriptPath = path.join(process.cwd(), 'scripts', 'extract-pdf.js');
 
-    // Obfuscate the arguments to prevent Turbopack from analyzing the path
-    const cmd = 'node';
-    const args = [scriptPath];
-    const result = spawnSync(cmd, args, {
+    // Defeat Turbopack static analysis by hiding the method name
+    const cp = require('child_process');
+    const method = Object.keys(cp).find((k) => k === 'spawnSync') as 'spawnSync';
+    if (!method) throw new Error('spawnSync not found');
+
+    const result = cp[method]('node', [scriptPath], {
       input: b64,
       maxBuffer: 20 * 1024 * 1024, // 20MB
       encoding: 'utf8',
